@@ -159,35 +159,86 @@ class Admin {
         $all_cats = get_categories(['hide_empty'=>0]);
 
         ?>
-        <div class="wrap">
-            <h1><?php echo esc_html__('Substack Importer', 'substack-importer'); ?></h1>
-            <h2 class="nav-tab-wrapper">
-                <a href="<?php echo esc_url(admin_url('admin.php?page=substack-importer&tab=settings')); ?>" class="nav-tab <?php echo $tab==='settings'?'nav-tab-active':''; ?>"><?php echo esc_html__('Settings', 'substack-importer'); ?></a>
-                <a href="<?php echo esc_url(admin_url('admin.php?page=substack-importer&tab=manual')); ?>" class="nav-tab <?php echo $tab==='manual'?'nav-tab-active':''; ?>"><?php echo esc_html__('Manual Import', 'substack-importer'); ?></a>
-            </h2>
+        <div class="wrap ssi-material-ui">
+            <div class="ssi-container">
+                <!-- Header Section -->
+                <div class="ssi-card ssi-fade-in">
+                    <div class="ssi-card-header">
+                        <div>
+                            <h1 class="ssi-flex ssi-gap-md">
+                                <span class="dashicons dashicons-rss" style="font-size: 32px; color: var(--md-primary);"></span>
+                                <?php echo esc_html__('Substack Importer', 'substack-importer'); ?>
+                            </h1>
+                            <p class="ssi-mb-0" style="color: var(--md-on-surface-variant); font-size: var(--md-font-size-body2);">
+                                <?php echo esc_html__('Import and manage Substack posts with advanced automation and content synchronization.', 'substack-importer'); ?>
+                            </p>
+                        </div>
+                        <div class="ssi-flex ssi-gap-md">
+                            <span class="ssi-chip ssi-chip-primary">v1.9.0</span>
+                            <span class="ssi-chip ssi-chip-success">Active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="ssi-card ssi-slide-up">
+                    <div class="ssi-tabs">
+                        <a href="<?php echo esc_url(admin_url('admin.php?page=substack-importer&tab=settings')); ?>" 
+                           class="ssi-tab <?php echo $tab==='settings'?'ssi-tab-active':''; ?>">
+                            <span class="dashicons dashicons-admin-settings" style="margin-right: 8px;"></span>
+                            <?php echo esc_html__('Settings', 'substack-importer'); ?>
+                        </a>
+                        <a href="<?php echo esc_url(admin_url('admin.php?page=substack-importer&tab=manual')); ?>" 
+                           class="ssi-tab <?php echo $tab==='manual'?'ssi-tab-active':''; ?>">
+                            <span class="dashicons dashicons-download" style="margin-right: 8px;"></span>
+                            <?php echo esc_html__('Manual Import', 'substack-importer'); ?>
+                        </a>
+                    </div>
+                </div>
 
             <?php if ($tab === 'settings'): ?>
                 <?php
                 if (isset($_GET['settings-updated'])) {
-                    add_settings_error('substack_importer_messages','substack_importer_message', esc_html__('Settings saved.', 'substack-importer'), 'updated');
+                    echo '<div class="ssi-alert ssi-alert-success ssi-fade-in">
+                            <span class="dashicons dashicons-yes-alt" style="color: var(--md-success);"></span>
+                            <div>
+                                <strong>' . esc_html__('Success!', 'substack-importer') . '</strong>
+                                ' . esc_html__('Settings have been saved successfully.', 'substack-importer') . '
+                            </div>
+                          </div>';
                 }
-                settings_errors('substack_importer_messages');
                 ?>
-                <form method="post" action="options.php" class="ssi-form">
+                
+                <form method="post" action="options.php" class="ssi-scale-in">
                     <?php settings_fields('substack_importer_settings_group'); ?>
 
+                    <!-- General Settings Card -->
                     <div class="ssi-card">
                         <div class="ssi-card-header">
                             <div>
-                                <h2><?php echo esc_html__('General', 'substack-importer'); ?></h2>
-                                <p class="desc"><?php echo esc_html__('Add one or more Substack RSS feeds to import from.', 'substack-importer'); ?></p>
+                                <h2 class="ssi-flex ssi-gap-sm">
+                                    <span class="dashicons dashicons-rss" style="color: var(--md-primary);"></span>
+                                    <?php echo esc_html__('General Settings', 'substack-importer'); ?>
+                                </h2>
+                                <p class="ssi-mb-0" style="color: var(--md-on-surface-variant);">
+                                    <?php echo esc_html__('Configure your Substack RSS feeds and basic import settings.', 'substack-importer'); ?>
+                                </p>
                             </div>
-                            <div class="ssi-badge"><?php echo esc_html__('Required', 'substack-importer'); ?></div>
+                            <span class="ssi-chip ssi-chip-primary"><?php echo esc_html__('Required', 'substack-importer'); ?></span>
                         </div>
-                        <div class="ssi-field">
-                            <label for="ssi-feed-urls"><?php echo esc_html__('Feed URLs', 'substack-importer'); ?></label>
-                            <textarea id="ssi-feed-urls" name="substack_importer_feed_urls" rows="6" placeholder="<?php echo esc_attr__("https://example1.substack.com/feed\nhttps://sportsinvestmentstudio.substack.com/feed", 'substack-importer'); ?>"><?php echo esc_textarea(get_option('substack_importer_feed_urls','')); ?></textarea>
-                            <p class="help"><?php printf(esc_html__('One URL per line. Use the full RSS URL (usually ends with %s).', 'substack-importer'), '<code>/feed</code>'); ?></p>
+                        <div class="ssi-card-body">
+                            <div class="ssi-form-group">
+                                <label for="ssi-feed-urls" class="ssi-label">
+                                    <span class="dashicons dashicons-admin-links" style="margin-right: 8px; color: var(--md-primary);"></span>
+                                    <?php echo esc_html__('Feed URLs', 'substack-importer'); ?>
+                                </label>
+                                <textarea id="ssi-feed-urls" name="substack_importer_feed_urls" rows="6" 
+                                          class="ssi-input ssi-textarea" 
+                                          placeholder="<?php echo esc_attr__("https://example1.substack.com/feed\nhttps://sportsinvestmentstudio.substack.com/feed", 'substack-importer'); ?>"><?php echo esc_textarea(get_option('substack_importer_feed_urls','')); ?></textarea>
+                                <p style="color: var(--md-on-surface-variant); font-size: var(--md-font-size-caption); margin-top: var(--md-spacing-sm);">
+                                    <?php printf(esc_html__('One URL per line. Use the full RSS URL (usually ends with %s).', 'substack-importer'), '<code>/feed</code>'); ?>
+                                </p>
+                            </div>
                         </div>
                     </div>
 
@@ -204,165 +255,291 @@ class Admin {
 
 
 
+                    <!-- Automation Settings Card -->
                     <div class="ssi-card">
                         <div class="ssi-card-header">
                             <div>
-                                <h2><?php echo esc_html__('Automation', 'substack-importer'); ?></h2>
-                                <p class="desc"><?php echo esc_html__('Enable background imports on a repeating schedule.', 'substack-importer'); ?></p>
+                                <h2 class="ssi-flex ssi-gap-sm">
+                                    <span class="dashicons dashicons-clock" style="color: var(--md-primary);"></span>
+                                    <?php echo esc_html__('Automation Settings', 'substack-importer'); ?>
+                                </h2>
+                                <p class="ssi-mb-0" style="color: var(--md-on-surface-variant);">
+                                    <?php echo esc_html__('Configure automated background imports and scheduling options.', 'substack-importer'); ?>
+                                </p>
                             </div>
-                            <div class="ssi-badge ssi-badge-optional"><?php echo esc_html__('Optional', 'substack-importer'); ?></div>
+                            <span class="ssi-chip ssi-chip-info"><?php echo esc_html__('Optional', 'substack-importer'); ?></span>
                         </div>
-                        <div class="ssi-grid">
-
-                            <div class="ssi-field">
-                                <label><?php echo esc_html__('Auto Import (Cron)', 'substack-importer'); ?></label>
-                                <label class="ssi-switch">
-                                    <input type="checkbox" name="substack_importer_cron_enabled" value="1" <?php checked(get_option('substack_importer_cron_enabled'), 1); ?>>
-                                    <span class="ssi-slider" aria-hidden="true"></span>
-                                    <span class="ssi-switch-label"><?php echo esc_html__('Enabled', 'substack-importer'); ?></span>
-                                </label>
-                                <p class="help"><?php echo esc_html__('When enabled, WordPress Cron will import new feed items periodically. The cron status shows remaining time in hours and minutes.', 'substack-importer'); ?></p>
-                            </div>
-                            <div class="ssi-field">
-                                <label for="ssi-interval"><?php echo esc_html__('Schedule Interval', 'substack-importer'); ?></label>
-                                <div class="ssi-input-group">
-                                    <input id="ssi-interval" type="number" min="2" max="600" step="1" name="substack_importer_cron_interval" value="<?php echo esc_attr(get_option('substack_importer_cron_interval', 6)); ?>" class="ssi-input">
-                                    <select id="ssi-interval-unit" name="substack_importer_cron_interval_unit" class="ssi-select">
-                                        <?php $unit = get_option('substack_importer_cron_interval_unit', 'hours'); ?>
-                                        <option value="minutes" <?php selected($unit, 'minutes'); ?>><?php echo esc_html__('Minutes', 'substack-importer'); ?></option>
-                                        <option value="hours" <?php selected($unit, 'hours'); ?>><?php echo esc_html__('Hours', 'substack-importer'); ?></option>
-                                    </select>
+                        <div class="ssi-card-body">
+                            <div class="ssi-grid ssi-grid-2">
+                                <!-- Auto Import Toggle -->
+                                <div class="ssi-form-group">
+                                    <label class="ssi-label">
+                                        <span class="dashicons dashicons-controls-play" style="margin-right: 8px; color: var(--md-primary);"></span>
+                                        <?php echo esc_html__('Auto Import (Cron)', 'substack-importer'); ?>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: var(--md-spacing-sm); cursor: pointer;">
+                                        <input type="checkbox" name="substack_importer_cron_enabled" value="1" <?php checked(get_option('substack_importer_cron_enabled'), 1); ?> style="transform: scale(1.2);">
+                                        <span style="color: var(--md-on-surface); font-size: var(--md-font-size-body2);"><?php echo esc_html__('Enable automated imports', 'substack-importer'); ?></span>
+                                    </label>
+                                    <p style="color: var(--md-on-surface-variant); font-size: var(--md-font-size-caption); margin-top: var(--md-spacing-sm);">
+                                        <?php echo esc_html__('When enabled, WordPress Cron will import new feed items periodically. The cron status shows remaining time in hours and minutes.', 'substack-importer'); ?>
+                                    </p>
                                 </div>
-                                <p class="help"><?php echo esc_html__('Range: 2 minutes to 10 hours (600 minutes). For hours, multiply by 60 to get minutes (e.g., 6 hours = 360 minutes).', 'substack-importer'); ?></p>
-                            </div>
-                            <div class="ssi-field">
-                                <label for="ssi-import-limit"><?php echo esc_html__('Import Limit per Run', 'substack-importer'); ?></label>
-                                <div class="ssi-input-group">
-                                    <input id="ssi-import-limit" type="number" min="1" max="100" step="1" name="substack_importer_cron_import_limit" value="<?php echo esc_attr(get_option('substack_importer_cron_import_limit', 10)); ?>" class="ssi-input">
-                                    <span class="ssi-input-suffix"><?php echo esc_html__('posts', 'substack-importer'); ?></span>
-                                </div>
-                                <p class="help"><?php echo esc_html__('Maximum number of new posts to import per cron job run. Range: 1-100 posts.', 'substack-importer'); ?></p>
-                            </div>
-                            <div class="ssi-field">
-                                <label for="ssi-cron-offset"><?php echo esc_html__('Current Cron Offset', 'substack-importer'); ?></label>
-                                <div class="ssi-input-group">
-                                    <input id="ssi-cron-offset" type="number" min="0" step="1" name="substack_importer_cron_offset" value="<?php echo esc_attr(get_option('substack_importer_cron_offset', 0)); ?>" class="ssi-input" readonly>
-                                    <button type="button" class="button button-secondary" id="ssi-reset-cron-offset">
-                                        <?php echo esc_html__('Reset Offset', 'substack-importer'); ?>
-                                    </button>
-                                </div>
-                                <p class="help"><?php echo esc_html__('Current position in the feed for cron imports. Automatically increments to prevent duplicate imports. Reset to start from the beginning.', 'substack-importer'); ?></p>
-                            </div>
-                            <div class="ssi-field">
-                                <label><?php echo esc_html__('Enhanced Gutenberg Support', 'substack-importer'); ?></label>
-                                <label class="ssi-switch">
-                                    <input type="checkbox" name="substack_importer_enhanced_gutenberg" value="1" <?php checked(get_option('substack_importer_enhanced_gutenberg', 1), 1); ?>>
-                                    <span class="ssi-slider" aria-hidden="true"></span>
-                                    <span class="ssi-switch-label"><?php echo esc_html__('Enabled', 'substack-importer'); ?></span>
-                                </label>
-                                <p class="help"><?php echo esc_html__('When enabled, imported content will be fully compatible with Gutenberg editor formatting, including proper block structure, responsive images, and modern HTML elements.', 'substack-importer'); ?></p>
-                            </div>
-                            <div class="ssi-field">
-                                <label><?php echo esc_html__('Cron Status', 'substack-importer'); ?></label>
-                                <div class="ssi-cron-status">
-                                    <div id="ssi-cron-status-content">
-                                        <?php
-                                        $next_scheduled = wp_next_scheduled(\SSI_OOP_CRON_HOOK);
-                                        if ($next_scheduled) {
-                                            $remaining = $next_scheduled - time();
-                                            $remaining_formatted = '';
-                                            if ($remaining > 0) {
-                                                if ($remaining >= 3600) {
-                                                    $hours = floor($remaining / 3600);
-                                                    $minutes = floor(($remaining % 3600) / 60);
-                                                    $remaining_formatted = sprintf(__('%d hours, %d minutes', 'substack-importer'), $hours, $minutes);
-                                                } elseif ($remaining >= 60) {
-                                                    $minutes = floor($remaining / 60);
-                                                    $remaining_formatted = sprintf(__('%d minutes', 'substack-importer'), $minutes);
-                                                } else {
-                                                    $remaining_formatted = sprintf(__('%d seconds', 'substack-importer'), $remaining);
-                                                }
-                                            }
-                                            
-                                            // Get last cron run info
-                                            $last_run = get_option('substack_importer_last_cron_run', 0);
-                                            $last_import_count = get_option('substack_importer_last_import_count', 0);
-                                            
-                                            echo '<div class="ssi-status-item"><strong>' . esc_html__('Next Run:', 'substack-importer') . '</strong> ' . esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $next_scheduled)) . '</div>';
-                                            echo '<div class="ssi-status-item"><strong>' . esc_html__('Remaining:', 'substack-importer') . '</strong> ' . esc_html($remaining_formatted) . '</div>';
-                                            
-                                            if ($last_run > 0) {
-                                                echo '<div class="ssi-status-item"><strong>' . esc_html__('Last Run:', 'substack-importer') . '</strong> ' . esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $last_run)) . '</div>';
-                                                if ($last_import_count > 0) {
-                                                    echo '<div class="ssi-status-item"><strong>' . esc_html__('Last Import:', 'substack-importer') . '</strong> ' . esc_html(sprintf(__('%d new posts', 'substack-importer'), $last_import_count)) . '</div>';
-                                                }
-                                            }
-                                            
-                                            // Show current offset
-                                            $current_offset = (int)get_option('substack_importer_cron_offset', 0);
-                                            echo '<div class="ssi-status-item"><strong>' . esc_html__('Current Offset:', 'substack-importer') . '</strong> ' . esc_html($current_offset) . '</div>';
-                                        } else {
-                                            echo '<div class="ssi-status-item"><em>' . esc_html__('No cron job scheduled', 'substack-importer') . '</em></div>';
-                                        }
-                                        ?>
+                                <!-- Schedule Interval -->
+                                <div class="ssi-form-group">
+                                    <label for="ssi-interval" class="ssi-label">
+                                        <span class="dashicons dashicons-calendar-alt" style="margin-right: 8px; color: var(--md-primary);"></span>
+                                        <?php echo esc_html__('Schedule Interval', 'substack-importer'); ?>
+                                    </label>
+                                    <div class="ssi-flex ssi-gap-sm">
+                                        <input id="ssi-interval" type="number" min="2" max="600" step="1" 
+                                               name="substack_importer_cron_interval" 
+                                               value="<?php echo esc_attr(get_option('substack_importer_cron_interval', 6)); ?>" 
+                                               class="ssi-input" style="flex: 1;">
+                                        <select id="ssi-interval-unit" name="substack_importer_cron_interval_unit" class="ssi-select" style="min-width: 120px;">
+                                            <?php $unit = get_option('substack_importer_cron_interval_unit', 'hours'); ?>
+                                            <option value="minutes" <?php selected($unit, 'minutes'); ?>><?php echo esc_html__('Minutes', 'substack-importer'); ?></option>
+                                            <option value="hours" <?php selected($unit, 'hours'); ?>><?php echo esc_html__('Hours', 'substack-importer'); ?></option>
+                                        </select>
                                     </div>
-                                    <button type="button" class="button button-secondary" id="ssi-refresh-cron-status" style="margin-top: 8px;">
-                                        <?php echo esc_html__('Refresh Status', 'substack-importer'); ?>
-                                    </button>
+                                    <p style="color: var(--md-on-surface-variant); font-size: var(--md-font-size-caption); margin-top: var(--md-spacing-sm);">
+                                        <?php echo esc_html__('Range: 2 minutes to 10 hours (600 minutes). For hours, multiply by 60 to get minutes (e.g., 6 hours = 360 minutes).', 'substack-importer'); ?>
+                                    </p>
+                                </div>
+
+                                <!-- Import Limit -->
+                                <div class="ssi-form-group">
+                                    <label for="ssi-import-limit" class="ssi-label">
+                                        <span class="dashicons dashicons-list-view" style="margin-right: 8px; color: var(--md-primary);"></span>
+                                        <?php echo esc_html__('Import Limit per Run', 'substack-importer'); ?>
+                                    </label>
+                                    <div class="ssi-flex ssi-gap-sm">
+                                        <input id="ssi-import-limit" type="number" min="1" max="100" step="1" 
+                                               name="substack_importer_cron_import_limit" 
+                                               value="<?php echo esc_attr(get_option('substack_importer_cron_import_limit', 10)); ?>" 
+                                               class="ssi-input" style="flex: 1;">
+                                        <span class="ssi-chip" style="align-self: center;"><?php echo esc_html__('posts', 'substack-importer'); ?></span>
+                                    </div>
+                                    <p style="color: var(--md-on-surface-variant); font-size: var(--md-font-size-caption); margin-top: var(--md-spacing-sm);">
+                                        <?php echo esc_html__('Maximum number of new posts to import per cron job run. Range: 1-100 posts.', 'substack-importer'); ?>
+                                    </p>
+                                </div>
+                                <!-- Cron Offset -->
+                                <div class="ssi-form-group">
+                                    <label for="ssi-cron-offset" class="ssi-label">
+                                        <span class="dashicons dashicons-controls-skipback" style="margin-right: 8px; color: var(--md-primary);"></span>
+                                        <?php echo esc_html__('Current Cron Offset', 'substack-importer'); ?>
+                                    </label>
+                                    <div class="ssi-flex ssi-gap-sm">
+                                        <input id="ssi-cron-offset" type="number" min="0" step="1" 
+                                               name="substack_importer_cron_offset" 
+                                               value="<?php echo esc_attr(get_option('substack_importer_cron_offset', 0)); ?>" 
+                                               class="ssi-input" readonly style="flex: 1;">
+                                        <button type="button" class="ssi-button ssi-button-secondary" id="ssi-reset-cron-offset">
+                                            <span class="dashicons dashicons-image-rotate" style="margin-right: 4px;"></span>
+                                            <?php echo esc_html__('Reset', 'substack-importer'); ?>
+                                        </button>
+                                    </div>
+                                    <p style="color: var(--md-on-surface-variant); font-size: var(--md-font-size-caption); margin-top: var(--md-spacing-sm);">
+                                        <?php echo esc_html__('Current position in the feed for cron imports. Automatically increments to prevent duplicate imports. Reset to start from the beginning.', 'substack-importer'); ?>
+                                    </p>
+                                </div>
+
+                            </div>
+                            <!-- Cron Status -->
+                            <div class="ssi-form-group" style="grid-column: 1 / -1;">
+                                <label class="ssi-label">
+                                    <span class="dashicons dashicons-chart-line" style="margin-right: 8px; color: var(--md-primary);"></span>
+                                    <?php echo esc_html__('Cron Status', 'substack-importer'); ?>
+                                </label>
+                                <div class="ssi-card" style="background: var(--md-surface-container); border: 1px solid rgba(0, 0, 0, 0.12);">
+                                    <div class="ssi-card-body">
+                                        <div id="ssi-cron-status-content">
+                                            <?php
+                                            $next_scheduled = wp_next_scheduled(\SSI_OOP_CRON_HOOK);
+                                            if ($next_scheduled) {
+                                                $remaining = $next_scheduled - time();
+                                                $remaining_formatted = '';
+                                                if ($remaining > 0) {
+                                                    if ($remaining >= 3600) {
+                                                        $hours = floor($remaining / 3600);
+                                                        $minutes = floor(($remaining % 3600) / 60);
+                                                        $remaining_formatted = sprintf(__('%d hours, %d minutes', 'substack-importer'), $hours, $minutes);
+                                                    } elseif ($remaining >= 60) {
+                                                        $minutes = floor($remaining / 60);
+                                                        $remaining_formatted = sprintf(__('%d minutes', 'substack-importer'), $minutes);
+                                                    } else {
+                                                        $remaining_formatted = sprintf(__('%d seconds', 'substack-importer'), $remaining);
+                                                    }
+                                                }
+                                                
+                                                // Get last cron run info
+                                                $last_run = get_option('substack_importer_last_cron_run', 0);
+                                                $last_import_count = get_option('substack_importer_last_import_count', 0);
+                                                
+                                                echo '<div class="ssi-flex ssi-flex-between ssi-mb-sm">
+                                                        <span style="color: var(--md-on-surface-variant);">' . esc_html__('Next Run:', 'substack-importer') . '</span>
+                                                        <span style="font-weight: 500;">' . esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $next_scheduled)) . '</span>
+                                                      </div>';
+                                                echo '<div class="ssi-flex ssi-flex-between ssi-mb-sm">
+                                                        <span style="color: var(--md-on-surface-variant);">' . esc_html__('Remaining:', 'substack-importer') . '</span>
+                                                        <span class="ssi-chip ssi-chip-info">' . esc_html($remaining_formatted) . '</span>
+                                                      </div>';
+                                                
+                                                if ($last_run > 0) {
+                                                    echo '<div class="ssi-flex ssi-flex-between ssi-mb-sm">
+                                                            <span style="color: var(--md-on-surface-variant);">' . esc_html__('Last Run:', 'substack-importer') . '</span>
+                                                            <span style="font-weight: 500;">' . esc_html(date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $last_run)) . '</span>
+                                                          </div>';
+                                                    if ($last_import_count > 0) {
+                                                        echo '<div class="ssi-flex ssi-flex-between ssi-mb-sm">
+                                                                <span style="color: var(--md-on-surface-variant);">' . esc_html__('Last Import:', 'substack-importer') . '</span>
+                                                                <span class="ssi-chip ssi-chip-success">' . esc_html(sprintf(__('%d new posts', 'substack-importer'), $last_import_count)) . '</span>
+                                                              </div>';
+                                                    }
+                                                }
+                                                
+                                                // Show current offset
+                                                $current_offset = (int)get_option('substack_importer_cron_offset', 0);
+                                                echo '<div class="ssi-flex ssi-flex-between">
+                                                        <span style="color: var(--md-on-surface-variant);">' . esc_html__('Current Offset:', 'substack-importer') . '</span>
+                                                        <span class="ssi-chip">' . esc_html($current_offset) . '</span>
+                                                      </div>';
+                                            } else {
+                                                echo '<div class="ssi-text-center" style="color: var(--md-on-surface-variant); padding: var(--md-spacing-lg);">
+                                                        <span class="dashicons dashicons-clock" style="font-size: 24px; margin-bottom: var(--md-spacing-sm); display: block;"></span>
+                                                        ' . esc_html__('No cron job scheduled', 'substack-importer') . '
+                                                      </div>';
+                                            }
+                                            ?>
+                                        </div>
+                                        <div class="ssi-flex ssi-gap-sm" style="margin-top: var(--md-spacing-md);">
+                                            <button type="button" class="ssi-button ssi-button-secondary" id="ssi-refresh-cron-status">
+                                                <span class="dashicons dashicons-update" style="margin-right: 4px;"></span>
+                                                <?php echo esc_html__('Refresh Status', 'substack-importer'); ?>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Uninstall & Data Settings Card -->
                     <div class="ssi-card">
-    <div class="ssi-card-header">
-        <div>
-            <h2><?php echo esc_html__('Uninstall & Data', 'substack-importer'); ?></h2>
-            <p class="desc"><?php echo esc_html__('By default, logs and settings are kept even if you uninstall. Check this to clear ALL plugin data on uninstall.', 'substack-importer'); ?></p>
-        </div>
-        <div class="ssi-badge ssi-badge-warning"><?php echo esc_html__('Caution', 'substack-importer'); ?></div>
-    </div>
-    <div class="ssi-field">
-        <label class="ssi-switch">
-            <input type="checkbox" name="substack_importer_clear_on_uninstall" value="1" <?php checked(get_option('substack_importer_clear_on_uninstall'), 1); ?>>
-            <span class="ssi-slider" aria-hidden="true"></span>
-            <span class="ssi-switch-label"><?php echo esc_html__('Clear all plugin data on uninstall', 'substack-importer'); ?></span>
-        </label>
-        <p class="help"><?php echo esc_html__('This will drop the import log table and delete plugin options and Substack-specific post meta.', 'substack-importer'); ?></p>
-    </div>
-</div>
+                        <div class="ssi-card-header">
+                            <div>
+                                <h2 class="ssi-flex ssi-gap-sm">
+                                    <span class="dashicons dashicons-trash" style="color: var(--md-warning);"></span>
+                                    <?php echo esc_html__('Uninstall & Data', 'substack-importer'); ?>
+                                </h2>
+                                <p class="ssi-mb-0" style="color: var(--md-on-surface-variant);">
+                                    <?php echo esc_html__('Configure data retention settings when uninstalling the plugin.', 'substack-importer'); ?>
+                                </p>
+                            </div>
+                            <span class="ssi-chip ssi-chip-warning"><?php echo esc_html__('Caution', 'substack-importer'); ?></span>
+                        </div>
+                        <div class="ssi-card-body">
+                            <div class="ssi-form-group">
+                                <label class="ssi-label">
+                                    <span class="dashicons dashicons-trash" style="margin-right: 8px; color: var(--md-warning);"></span>
+                                    <?php echo esc_html__('Clear all plugin data on uninstall', 'substack-importer'); ?>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: var(--md-spacing-sm); cursor: pointer;">
+                                    <input type="checkbox" name="substack_importer_clear_on_uninstall" value="1" <?php checked(get_option('substack_importer_clear_on_uninstall'), 1); ?> style="transform: scale(1.2);">
+                                    <span style="color: var(--md-on-surface); font-size: var(--md-font-size-body2);"><?php echo esc_html__('Enable data cleanup on uninstall', 'substack-importer'); ?></span>
+                                </label>
+                                <p style="color: var(--md-on-surface-variant); font-size: var(--md-font-size-caption); margin-top: var(--md-spacing-sm);">
+                                    <?php echo esc_html__('This will drop the import log table and delete plugin options and Substack-specific post meta.', 'substack-importer'); ?>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
 
-<div class="ssi-toolbar-bottom">
-                        <?php submit_button(esc_html__('Save Settings', 'substack-importer'), 'primary', 'submit', false); ?>
-                        <a href="<?php echo esc_url(admin_url('admin.php?page=substack-importer&tab=manual')); ?>" class="button ssi-ghost"><?php echo esc_html__('Go to Manual Import', 'substack-importer'); ?></a>
+                    <!-- Action Buttons -->
+                    <div class="ssi-card">
+                        <div class="ssi-card-footer">
+                            <div class="ssi-flex ssi-gap-lg">
+                                <button type="submit" class="ssi-button ssi-button-primary ssi-button-large">
+                                    <span class="dashicons dashicons-yes-alt" style="margin-right: 8px;"></span>
+                                    <?php echo esc_html__('Save Settings', 'substack-importer'); ?>
+                                </button>
+                                <a href="<?php echo esc_url(admin_url('admin.php?page=substack-importer&tab=manual')); ?>" 
+                                   class="ssi-button ssi-button-outlined">
+                                    <span class="dashicons dashicons-download" style="margin-right: 8px;"></span>
+                                    <?php echo esc_html__('Go to Manual Import', 'substack-importer'); ?>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </form>
             <?php else: ?>
-                <p><?php echo esc_html__('Click "Fetch Feed" to load recent posts, select which ones to import. Categories are mapped by explicit rules (Exact/CI/Regex) or created automatically.', 'substack-importer'); ?></p>
-                
-
-                
-                <div class="ssi-toolbar" style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-                    <button class="button button-primary" id="substack-fetch"><?php echo esc_html__('Fetch Feed', 'substack-importer'); ?></button>
-                    <button type="button" class="button button-secondary" id="substack-import-top" style="display:none;"><?php echo esc_html__('Import Selected', 'substack-importer'); ?></button>
+                <!-- Manual Import Page -->
+                <div class="ssi-card ssi-fade-in">
+                    <div class="ssi-card-header">
+                        <div>
+                            <h2 class="ssi-flex ssi-gap-sm">
+                                <span class="dashicons dashicons-download" style="color: var(--md-primary);"></span>
+                                <?php echo esc_html__('Manual Import', 'substack-importer'); ?>
+                            </h2>
+                            <p class="ssi-mb-0" style="color: var(--md-on-surface-variant);">
+                                <?php echo esc_html__('Click "Fetch Feed" to load recent posts, select which ones to import. Categories are mapped by explicit rules (Exact/CI/Regex) or created automatically.', 'substack-importer'); ?>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="ssi-card-body">
+                        <div class="ssi-flex ssi-gap-lg">
+                            <button class="ssi-button ssi-button-primary" id="substack-fetch">
+                                <span class="dashicons dashicons-update" style="margin-right: 8px;"></span>
+                                <?php echo esc_html__('Fetch Feed', 'substack-importer'); ?>
+                            </button>
+                            <button type="button" class="ssi-button ssi-button-secondary" id="substack-import-top" style="display:none;">
+                                <span class="dashicons dashicons-download" style="margin-right: 8px;"></span>
+                                <?php echo esc_html__('Import Selected', 'substack-importer'); ?>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <form id="substack-import-form">
                     <?php settings_fields('substack_importer_settings_group'); ?>
-                    <table class="widefat" id="substack-table" style="display:none; margin-top:12px;">
-                        <thead>
-                        <tr>
-                            <th style="width:80px;"><?php echo esc_html__('Select', 'substack-importer'); ?></th>
-                            <th><?php echo esc_html__('Title', 'substack-importer'); ?></th>
-                            <th style="width:180px;"><?php echo esc_html__('Date', 'substack-importer'); ?></th>
-                            <th style="width:240px;"><?php echo esc_html__('Categories (from feed)', 'substack-importer'); ?></th>
-                            <th style="width:160px;"><?php echo esc_html__('Status', 'substack-importer'); ?></th>
-                        </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                    <button type="submit" class="button button-secondary" id="substack-import" style="display:none;"><?php echo esc_html__('Import Selected', 'substack-importer'); ?></button>
+                    <div class="ssi-card ssi-slide-up" id="substack-table" style="display:none;">
+                        <div class="ssi-card-header">
+                            <div>
+                                <h3 class="ssi-flex ssi-gap-sm">
+                                    <span class="dashicons dashicons-list-view" style="color: var(--md-primary);"></span>
+                                    <?php echo esc_html__('Available Posts', 'substack-importer'); ?>
+                                </h3>
+                                <p class="ssi-mb-0" style="color: var(--md-on-surface-variant); font-size: var(--md-font-size-body2);">
+                                    <?php echo esc_html__('Select the posts you want to import. Categories will be automatically mapped or created.', 'substack-importer'); ?>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="ssi-table-container">
+                            <table class="ssi-table">
+                                <thead>
+                                <tr>
+                                    <th style="width:80px; text-align: center;">
+                                        <span class="dashicons dashicons-yes-alt" style="color: var(--md-primary);"></span>
+                                    </th>
+                                    <th><?php echo esc_html__('Title', 'substack-importer'); ?></th>
+                                    <th style="width:180px;"><?php echo esc_html__('Date', 'substack-importer'); ?></th>
+                                    <th style="width:240px;"><?php echo esc_html__('Categories (from feed)', 'substack-importer'); ?></th>
+                                    <th style="width:160px;"><?php echo esc_html__('Status', 'substack-importer'); ?></th>
+                                </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="ssi-card-footer">
+                            <button type="submit" class="ssi-button ssi-button-primary" id="substack-import" style="display:none;">
+                                <span class="dashicons dashicons-download" style="margin-right: 8px;"></span>
+                                <?php echo esc_html__('Import Selected', 'substack-importer'); ?>
+                            </button>
+                        </div>
+                    </div>
                 </form>
             <?php endif; ?>
+            </div>
         </div>
         <?php
     }
@@ -382,84 +559,158 @@ class Admin {
             ],
         ]);
         ?>
-        <div class="wrap">
-            <h1><?php echo esc_html__('Imported Posts (Substack)', 'substack-importer'); ?></h1>
+        <div class="wrap ssi-material-ui">
+            <div class="ssi-container">
+                <!-- Header Section -->
+                <div class="ssi-card ssi-fade-in">
+                    <div class="ssi-card-header">
+                        <div>
+                            <h1 class="ssi-flex ssi-gap-md">
+                                <span class="dashicons dashicons-portfolio" style="font-size: 32px; color: var(--md-primary);"></span>
+                                <?php echo esc_html__('Imported Posts (Substack)', 'substack-importer'); ?>
+                            </h1>
+                            <p class="ssi-mb-0" style="color: var(--md-on-surface-variant); font-size: var(--md-font-size-body2);">
+                                <?php echo esc_html__('Manage and re-sync posts imported from Substack feeds.', 'substack-importer'); ?>
+                            </p>
+                        </div>
+                        <div class="ssi-flex ssi-gap-md">
+                            <span class="ssi-chip ssi-chip-info"><?php echo esc_html($q->found_posts); ?> <?php echo esc_html__('posts', 'substack-importer'); ?></span>
+                        </div>
+                    </div>
+                </div>
 
-            <table class="widefat striped">
-                <thead>
-                    <tr>
-                        <th><?php echo esc_html__('Title', 'substack-importer'); ?></th>
-                        <th style="width:20%"><?php echo esc_html__('Source', 'substack-importer'); ?></th>
-                        <th style="width:12%"><?php echo esc_html__('Last Modified', 'substack-importer'); ?></th>
-                        <th style="width:10%"><?php echo esc_html__('Status', 'substack-importer'); ?></th>
-                        <th style="width:22%"><?php echo esc_html__('Actions', 'substack-importer'); ?></th>
-                    </tr>
-                </thead>
-                <tbody>
-                <?php if ($q->have_posts()) : while ($q->have_posts()) : $q->the_post();
-                    $pid  = get_the_ID();
-                    $guid = get_post_meta($pid, '_substack_guid', true);
-                    $src  = get_post_meta($pid, '_substack_source_link', true);
-                    $hash = get_post_meta($pid, '_substack_hash', true);
-                    $src_disp = $src ? $src : $guid;
-                    $flag = get_post_meta($pid, '_substack_out_of_sync', true);
-                    ?>
-                    <tr id="ssi-row-<?php echo (int)$pid; ?>">
-                        <td>
-                            <a href="<?php echo esc_url(get_edit_post_link($pid)); ?>"><strong><?php echo esc_html(get_the_title()); ?></strong></a><br>
-                            <small><?php echo esc_html__('Hash:', 'substack-importer'); ?> <?php echo esc_html(substr((string)$hash,0,10)); ?>…</small>
-                            <?php if ($flag): ?>
-                                <span class="ssi-badge ssi-badge-warning" style="margin-left:6px;"><?php echo esc_html__('Out of sync', 'substack-importer'); ?></span>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?php if ($src_disp): ?>
-                                <a href="<?php echo esc_url($src_disp); ?>" target="_blank" rel="noopener"><?php echo esc_html(parse_url($src_disp, PHP_URL_HOST)); ?></a>
-                            <?php else: ?>
-                                &mdash;
-                            <?php endif; ?>
-                        </td>
-                        <td><?php echo esc_html(get_post_modified_time('Y-m-d H:i')); ?></td>
-                        <td>
-                            <?php 
-                            $post_status = get_post_status($pid);
-                            if ($post_status === 'trash') {
-                                echo '<span class="ssi-badge ssi-badge-deleted">' . esc_html__('Deleted', 'substack-importer') . '</span>';
-                            } elseif ($post_status === 'publish') {
-                                echo '<span class="ssi-badge ssi-badge-published">' . esc_html__('Published', 'substack-importer') . '</span>';
-                            } elseif ($post_status === 'draft') {
-                                echo '<span class="ssi-badge ssi-badge-draft">' . esc_html__('Draft', 'substack-importer') . '</span>';
-                            } elseif ($post_status === 'pending') {
-                                echo '<span class="ssi-badge ssi-badge-pending">' . esc_html__('Pending', 'substack-importer') . '</span>';
-                            } else {
-                                echo '<span class="ssi-badge ssi-badge-other">' . esc_html(ucfirst($post_status)) . '</span>';
-                            }
-                            ?>
-                        </td>
-                        <td>
-                            <button class="button button-primary ssi-import-post" data-post="<?php echo (int)$pid; ?>"><?php echo esc_html__('Import', 'substack-importer'); ?></button>
-                            <button class="button button-secondary ssi-resync-now" data-post="<?php echo (int)$pid; ?>" style="<?php echo $flag ? '' : 'display:none;'; ?>"><?php echo esc_html__('Re-sync now', 'substack-importer'); ?></button>
-                            <span class="ssi-status-text" style="margin-left:8px;"></span>
-                        </td>
-                    </tr>
-                <?php endwhile; else: ?>
-                    <tr><td colspan="5"><?php echo esc_html__('No imported posts found.', 'substack-importer'); ?></td></tr>
-                <?php endif; wp_reset_postdata(); ?>
-                </tbody>
-            </table>
+                <!-- Posts Table -->
+                <div class="ssi-card ssi-slide-up">
+                    <div class="ssi-table-container">
+                        <table class="ssi-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <span class="dashicons dashicons-format-aside" style="margin-right: 8px; color: var(--md-primary);"></span>
+                                        <?php echo esc_html__('Title', 'substack-importer'); ?>
+                                    </th>
+                                    <th style="width:20%">
+                                        <span class="dashicons dashicons-admin-links" style="margin-right: 8px; color: var(--md-primary);"></span>
+                                        <?php echo esc_html__('Source', 'substack-importer'); ?>
+                                    </th>
+                                    <th style="width:12%">
+                                        <span class="dashicons dashicons-calendar-alt" style="margin-right: 8px; color: var(--md-primary);"></span>
+                                        <?php echo esc_html__('Last Modified', 'substack-importer'); ?>
+                                    </th>
+                                    <th style="width:10%">
+                                        <span class="dashicons dashicons-yes-alt" style="margin-right: 8px; color: var(--md-primary);"></span>
+                                        <?php echo esc_html__('Status', 'substack-importer'); ?>
+                                    </th>
+                                    <th style="width:22%">
+                                        <span class="dashicons dashicons-admin-tools" style="margin-right: 8px; color: var(--md-primary);"></span>
+                                        <?php echo esc_html__('Actions', 'substack-importer'); ?>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if ($q->have_posts()) : while ($q->have_posts()) : $q->the_post();
+                                    $pid  = get_the_ID();
+                                    $guid = get_post_meta($pid, '_substack_guid', true);
+                                    $src  = get_post_meta($pid, '_substack_source_link', true);
+                                    $hash = get_post_meta($pid, '_substack_hash', true);
+                                    $src_disp = $src ? $src : $guid;
+                                    $flag = get_post_meta($pid, '_substack_out_of_sync', true);
+                                    ?>
+                                    <tr id="ssi-row-<?php echo (int)$pid; ?>">
+                                        <td>
+                                            <div class="ssi-flex ssi-flex-column ssi-gap-xs">
+                                                <a href="<?php echo esc_url(get_edit_post_link($pid)); ?>" style="font-weight: 500; color: var(--md-primary); text-decoration: none;">
+                                                    <?php echo esc_html(get_the_title()); ?>
+                                                </a>
+                                                <div class="ssi-flex ssi-gap-sm" style="align-items: center;">
+                                                    <span style="color: var(--md-on-surface-variant); font-size: var(--md-font-size-caption);">
+                                                        <?php echo esc_html__('Hash:', 'substack-importer'); ?> <?php echo esc_html(substr((string)$hash,0,10)); ?>…
+                                                    </span>
+                                                    <?php if ($flag): ?>
+                                                        <span class="ssi-chip ssi-chip-warning"><?php echo esc_html__('Out of sync', 'substack-importer'); ?></span>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <?php if ($src_disp): ?>
+                                                <a href="<?php echo esc_url($src_disp); ?>" target="_blank" rel="noopener" 
+                                                   style="color: var(--md-primary); text-decoration: none; display: flex; align-items: center; gap: 4px;">
+                                                    <span class="dashicons dashicons-external" style="font-size: 14px;"></span>
+                                                    <?php echo esc_html(parse_url($src_disp, PHP_URL_HOST)); ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <span style="color: var(--md-on-surface-variant);">&mdash;</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <span style="color: var(--md-on-surface); font-size: var(--md-font-size-body2);">
+                                                <?php echo esc_html(get_post_modified_time('Y-m-d H:i')); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <?php 
+                                            $post_status = get_post_status($pid);
+                                            if ($post_status === 'trash') {
+                                                echo '<span class="ssi-chip ssi-chip-error">' . esc_html__('Deleted', 'substack-importer') . '</span>';
+                                            } elseif ($post_status === 'publish') {
+                                                echo '<span class="ssi-chip ssi-chip-success">' . esc_html__('Published', 'substack-importer') . '</span>';
+                                            } elseif ($post_status === 'draft') {
+                                                echo '<span class="ssi-chip ssi-chip-warning">' . esc_html__('Draft', 'substack-importer') . '</span>';
+                                            } elseif ($post_status === 'pending') {
+                                                echo '<span class="ssi-chip ssi-chip-info">' . esc_html__('Pending', 'substack-importer') . '</span>';
+                                            } else {
+                                                echo '<span class="ssi-chip">' . esc_html(ucfirst($post_status)) . '</span>';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <div class="ssi-flex ssi-gap-md">
+                                                <button class="ssi-button ssi-button-primary ssi-button-small ssi-import-post" data-post="<?php echo (int)$pid; ?>">
+                                                    <span class="dashicons dashicons-download" style="margin-right: 4px;"></span>
+                                                    <?php echo esc_html__('Import', 'substack-importer'); ?>
+                                                </button>
+                                                <button class="ssi-button ssi-button-secondary ssi-button-small ssi-resync-now" data-post="<?php echo (int)$pid; ?>" style="<?php echo $flag ? '' : 'display:none;'; ?>">
+                                                    <span class="dashicons dashicons-update" style="margin-right: 4px;"></span>
+                                                    <?php echo esc_html__('Re-sync', 'substack-importer'); ?>
+                                                </button>
+                                                <span class="ssi-status-text" style="margin-left:8px; color: var(--md-on-surface-variant); font-size: var(--md-font-size-caption);"></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; else: ?>
+                                    <tr>
+                                        <td colspan="5" class="ssi-text-center" style="padding: var(--md-spacing-xxl); color: var(--md-on-surface-variant);">
+                                            <span class="dashicons dashicons-portfolio" style="font-size: 48px; margin-bottom: var(--md-spacing-md); display: block; opacity: 0.5;"></span>
+                                            <?php echo esc_html__('No imported posts found.', 'substack-importer'); ?>
+                                        </td>
+                                    </tr>
+                                <?php endif; wp_reset_postdata(); ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-            <?php if ($q->max_num_pages > 1): ?>
-                <div class="tablenav"><div class="tablenav-pages">
-                    <?php
-                    echo paginate_links([
-                        'base'    => add_query_arg('paged', '%#%'),
-                        'format'  => '',
-                        'current' => $paged,
-                        'total'   => $q->max_num_pages,
-                    ]);
-                    ?>
-                </div></div>
-            <?php endif; ?>
+                <!-- Pagination -->
+                <?php if ($q->max_num_pages > 1): ?>
+                    <div class="ssi-card ssi-scale-in">
+                        <div class="ssi-card-body">
+                            <div class="ssi-flex ssi-flex-center">
+                                <div class="tablenav-pages">
+                                    <?php
+                                    echo paginate_links([
+                                        'base'    => add_query_arg('paged', '%#%'),
+                                        'format'  => '',
+                                        'current' => $paged,
+                                        'total'   => $q->max_num_pages,
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
 
         <style>

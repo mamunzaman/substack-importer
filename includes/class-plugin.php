@@ -123,7 +123,7 @@ final class Plugin {
     }
     
     public function ajax_refresh_cron_status() {
-        if (!current_user_can($this->capability)) {
+        if (!current_user_can(\SSI_OOP_CAP)) {
             wp_die('Unauthorized', 403);
         }
         
@@ -151,21 +151,39 @@ final class Plugin {
             $last_run = get_option('substack_importer_last_cron_run', 0);
             $last_import_count = get_option('substack_importer_last_import_count', 0);
             
-            $html .= '<div class="ssi-status-item"><strong>' . __('Next Run:', 'substack-importer') . '</strong> ' . date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $next_scheduled) . '</div>';
-            $html .= '<div class="ssi-status-item"><strong>' . __('Remaining:', 'substack-importer') . '</strong> ' . $remaining_formatted . '</div>';
+            $html .= '<div class="ssi-flex ssi-flex-between ssi-mb-sm">
+                        <span style="color: var(--md-on-surface-variant);">' . __('Next Run:', 'substack-importer') . '</span>
+                        <span style="font-weight: 500;">' . date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $next_scheduled) . '</span>
+                      </div>';
+            $html .= '<div class="ssi-flex ssi-flex-between ssi-mb-sm">
+                        <span style="color: var(--md-on-surface-variant);">' . __('Remaining:', 'substack-importer') . '</span>
+                        <span class="ssi-chip ssi-chip-info">' . $remaining_formatted . '</span>
+                      </div>';
             
             if ($last_run > 0) {
-                $html .= '<div class="ssi-status-item"><strong>' . __('Last Run:', 'substack-importer') . '</strong> ' . date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $last_run) . '</div>';
+                $html .= '<div class="ssi-flex ssi-flex-between ssi-mb-sm">
+                            <span style="color: var(--md-on-surface-variant);">' . __('Last Run:', 'substack-importer') . '</span>
+                            <span style="font-weight: 500;">' . date_i18n(get_option('date_format') . ' ' . get_option('time_format'), $last_run) . '</span>
+                          </div>';
                 if ($last_import_count > 0) {
-                    $html .= '<div class="ssi-status-item"><strong>' . __('Last Import:', 'substack-importer') . '</strong> ' . sprintf(__('%d new posts', 'substack-importer'), $last_import_count) . '</div>';
+                    $html .= '<div class="ssi-flex ssi-flex-between ssi-mb-sm">
+                                <span style="color: var(--md-on-surface-variant);">' . __('Last Import:', 'substack-importer') . '</span>
+                                <span class="ssi-chip ssi-chip-success">' . sprintf(__('%d new posts', 'substack-importer'), $last_import_count) . '</span>
+                              </div>';
                 }
             }
             
             // Show current offset
             $current_offset = (int)get_option('substack_importer_cron_offset', 0);
-            $html .= '<div class="ssi-status-item"><strong>' . __('Current Offset:', 'substack-importer') . '</strong> ' . $current_offset . '</div>';
+            $html .= '<div class="ssi-flex ssi-flex-between">
+                        <span style="color: var(--md-on-surface-variant);">' . __('Current Offset:', 'substack-importer') . '</span>
+                        <span class="ssi-chip">' . $current_offset . '</span>
+                      </div>';
         } else {
-            $html .= '<div class="ssi-status-item"><em>' . __('No cron job scheduled', 'substack-importer') . '</em></div>';
+            $html .= '<div class="ssi-text-center" style="color: var(--md-on-surface-variant); padding: var(--md-spacing-lg);">
+                        <span class="dashicons dashicons-clock" style="font-size: 24px; margin-bottom: var(--md-spacing-sm); display: block;"></span>
+                        ' . __('No cron job scheduled', 'substack-importer') . '
+                      </div>';
         }
         
         wp_send_json_success(['html' => $html]);

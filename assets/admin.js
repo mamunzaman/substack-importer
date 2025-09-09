@@ -19,14 +19,18 @@ jQuery(function ($) {
     return out;
   };
 
-  // ===== Overlay (loading/success/error inline) =====
+  // ===== Material UI Overlay (loading/success/error inline) =====
   function ensureOverlay() {
     if ($("#ssi-overlay").length) return;
     $("body").append(`
-      <div id="ssi-overlay" aria-hidden="true" style="display:none;">
+      <div id="ssi-overlay" class="ssi-modal-overlay" aria-hidden="true" style="display:none;">
         <div class="ssi-modal" role="dialog" aria-live="polite" aria-busy="true">
-          <div class="ssi-icon ssi-spinner" aria-hidden="true"></div>
-          <p class="ssi-text">${t("working", "Working…")}</p>
+          <div class="ssi-modal-body">
+            <div class="ssi-loading">
+              <div class="ssi-spinner" aria-hidden="true"></div>
+              <span class="ssi-text">${t("working", "Working…")}</span>
+            </div>
+          </div>
         </div>
       </div>
     `);
@@ -34,12 +38,17 @@ jQuery(function ($) {
   function setOverlay(mode, text) {
     ensureOverlay();
     const $ov = $("#ssi-overlay");
-    const $icon = $ov.find(".ssi-icon");
+    const $loading = $ov.find(".ssi-loading");
+    const $spinner = $ov.find(".ssi-spinner");
     const $text = $ov.find(".ssi-text");
-    $icon.removeClass("ssi-spinner ssi-check ssi-error");
-    if (mode === "loading") $icon.addClass("ssi-spinner");
-    if (mode === "success") $icon.addClass("ssi-check");
-    if (mode === "error") $icon.addClass("ssi-error");
+
+    if (mode === "loading") {
+      $loading.show();
+      $spinner.show();
+    } else {
+      $loading.hide();
+      $spinner.hide();
+    }
     $text.text(text || "");
   }
   function showOverlay() {
@@ -50,21 +59,23 @@ jQuery(function ($) {
     $("#ssi-overlay").fadeOut(180);
   }
 
-  // ===== Enhanced Popup (variants + actions + a11y) =====
+  // ===== Material UI Popup (variants + actions + a11y) =====
   function ensurePopup() {
     if ($("#ssi-popup").length) return;
     $("body").append(`
-      <div id="ssi-popup" class="ssi-pop-overlay" style="display:none;" aria-hidden="true">
-        <div class="ssi-pop-panel" role="dialog" aria-modal="true" aria-labelledby="ssi-pop-title" aria-describedby="ssi-pop-desc" tabindex="-1"> 
-          <div class="ssi-pop-header">
-            <div class="ssi-pop-icon" aria-hidden="true"></div>
-            <div class="ssi-pop-titles">
-              <h3 id="ssi-pop-title"></h3>
-              <p id="ssi-pop-desc" class="ssi-pop-sub"></p>
+      <div id="ssi-popup" class="ssi-modal-overlay" style="display:none;" aria-hidden="true">
+        <div class="ssi-modal" role="dialog" aria-modal="true" aria-labelledby="ssi-pop-title" aria-describedby="ssi-pop-desc" tabindex="-1"> 
+          <div class="ssi-modal-header">
+            <div class="ssi-flex ssi-gap-md">
+              <div class="ssi-pop-icon" aria-hidden="true"></div>
+              <div>
+                <h3 id="ssi-pop-title" style="margin: 0; font-size: var(--md-font-size-h4);"></h3>
+                <p id="ssi-pop-desc" style="margin: 4px 0 0; color: var(--md-on-surface-variant); font-size: var(--md-font-size-body2);"></p>
+              </div>
             </div>
           </div>
-          <div class="ssi-pop-body"></div>
-          <div class="ssi-pop-actions"></div>
+          <div class="ssi-modal-body" id="ssi-pop-body"></div>
+          <div class="ssi-modal-footer" id="ssi-pop-actions"></div>
         </div>
       </div>
     `);
@@ -126,7 +137,7 @@ jQuery(function ($) {
         actions: [
           {
             text: t("ok", "OK"),
-            className: "button button-primary",
+            className: "ssi-button ssi-button-primary",
             onClick: hidePopup,
           },
         ],
@@ -135,39 +146,51 @@ jQuery(function ($) {
     );
 
     const $ov = $("#ssi-popup");
-    const $card = $ov.find(".ssi-pop-panel");
+    const $modal = $ov.find(".ssi-modal");
     const $icon = $ov.find(".ssi-pop-icon");
     const $title = $ov.find("#ssi-pop-title");
     const $sub = $ov.find("#ssi-pop-desc");
-    const $body = $ov.find(".ssi-pop-body");
-    const $acts = $ov.find(".ssi-pop-actions");
+    const $body = $ov.find("#ssi-pop-body");
+    const $acts = $ov.find("#ssi-pop-actions");
 
-    $card
-      .removeClass("ssi-pop-success ssi-pop-error ssi-pop-info")
-      .addClass("ssi-pop-" + opts.variant);
-
-    $icon
-      .removeClass("is-success is-error is-info")
-      .addClass(
-        opts.variant === "success"
-          ? "is-success"
-          : opts.variant === "error"
-          ? "is-error"
-          : "is-info"
-      );
+    // Set icon based on variant
+    $icon.removeClass("is-success is-error is-info");
+    if (opts.variant === "success") {
+      $icon
+        .addClass("is-success")
+        .html(
+          '<span class="dashicons dashicons-yes-alt" style="color: var(--md-success);"></span>'
+        );
+    } else if (opts.variant === "error") {
+      $icon
+        .addClass("is-error")
+        .html(
+          '<span class="dashicons dashicons-warning" style="color: var(--md-error);"></span>'
+        );
+    } else {
+      $icon
+        .addClass("is-info")
+        .html(
+          '<span class="dashicons dashicons-info" style="color: var(--md-info);"></span>'
+        );
+    }
 
     $title.text(opts.title || "");
     $sub.text(opts.sub || "");
     $body
-      .html(opts.message ? `<p>${opts.message}</p>` : "")
+      .html(
+        opts.message
+          ? `<p style="margin: 0; color: var(--md-on-surface);">${opts.message}</p>`
+          : ""
+      )
       .toggle(!!opts.message);
 
     $acts.empty();
     (opts.actions || []).forEach(function (a) {
       const btn = $(
-        `<button type="button" class="${a.className || "button"}">${
-          a.text || t("ok", "OK")
-        }</button>`
+        `<button type="button" class="${
+          a.className || "ssi-button ssi-button-primary"
+        }">${a.text || t("ok", "OK")}</button>`
       );
       btn.on("click", function () {
         if (typeof a.onClick === "function") a.onClick();
@@ -179,17 +202,16 @@ jQuery(function ($) {
     $ov.fadeIn(120, function () {
       _trapFocus();
       $ov.attr("aria-hidden", "false");
-      $card.addClass("ssi-pop-in");
+      $modal.addClass("ssi-scale-in");
     });
   }
 
   function hidePopup() {
     const $ov = $("#ssi-popup");
-    const $card = $ov.find(".ssi-pop-panel");
-    $card.removeClass("ssi-pop-in").addClass("ssi-pop-out");
+    const $modal = $ov.find(".ssi-modal");
+    $modal.removeClass("ssi-scale-in");
     setTimeout(function () {
       $ov.fadeOut(120, function () {
-        $card.removeClass("ssi-pop-out");
         $ov.attr("aria-hidden", "true");
         _untrapFocus();
       });
@@ -204,15 +226,17 @@ jQuery(function ($) {
     const opts = categories
       .map((c) => `<option value="${c.id}">${c.name}</option>`)
       .join("");
-    return `<select multiple class="substack-cat" style="width:100%;">${opts}</select>`;
+    return `<select multiple class="substack-cat ssi-select" style="width:100%; min-height: 80px; border-radius: var(--md-radius-sm); border: 1px solid rgba(0, 0, 0, 0.23); padding: var(--md-spacing-sm);">${opts}</select>`;
   }
 
   function buildRow(item) {
     const status = item.exists
-      ? '<span style="color:#888">' +
+      ? '<span class="ssi-chip ssi-chip-warning">' +
         t("alreadyImported", "Already imported") +
         "</span>"
-      : '<span style="color:green">' + t("new", "New") + "</span>";
+      : '<span class="ssi-chip ssi-chip-success">' +
+        t("new", "New") +
+        "</span>";
 
     const encoded = encodeURIComponent(
       JSON.stringify({
@@ -226,14 +250,26 @@ jQuery(function ($) {
 
     return `
       <tr class="substack-row" data-post="${encoded}">
-        <td><input type="checkbox" class="substack-select" ${
-          item.exists ? "disabled" : ""
-        }></td>
-        <td>${item.title || ""}</td>
-        <td>${item.date || ""}</td>
+        <td style="text-align: center;">
+          <input type="checkbox" class="substack-select" ${
+            item.exists ? "disabled" : ""
+          } style="transform: scale(1.2);">
+        </td>
         <td>
-          <div>
-            <strong>WordPress Categories:</strong><br>
+          <div style="font-weight: 500; color: var(--md-on-surface);">
+            ${item.title || ""}
+          </div>
+        </td>
+        <td>
+          <span style="color: var(--md-on-surface-variant); font-size: var(--md-font-size-body2);">
+            ${item.date || ""}
+          </span>
+        </td>
+        <td>
+          <div class="ssi-flex ssi-flex-column ssi-gap-xs">
+            <span style="font-weight: 500; color: var(--md-on-surface); font-size: var(--md-font-size-caption);">
+              WordPress Categories:
+            </span>
             ${renderCategorySelect()}
           </div>
         </td>
@@ -244,7 +280,12 @@ jQuery(function ($) {
   // ===== Fetch feed =====
   $fetch.on("click", function (e) {
     e.preventDefault();
-    $fetch.prop("disabled", true).text(t("fetching", "Fetching…"));
+    $fetch
+      .prop("disabled", true)
+      .html(
+        '<span class="dashicons dashicons-update" style="margin-right: 8px; animation: ssi-spin 1s linear infinite;"></span>' +
+          t("fetching", "Fetching…")
+      );
     $tbody.empty();
     $table.hide();
     $import.hide();
@@ -306,7 +347,12 @@ jQuery(function ($) {
         });
       })
       .always(function () {
-        $fetch.prop("disabled", false).text(t("fetch", "Fetch Feed"));
+        $fetch
+          .prop("disabled", false)
+          .html(
+            '<span class="dashicons dashicons-update" style="margin-right: 8px;"></span>' +
+              t("fetch", "Fetch Feed")
+          );
       });
   });
 
@@ -419,8 +465,18 @@ jQuery(function ($) {
     }
 
     // proceed with import
-    $import.prop("disabled", true).text(t("importing", "Importing…"));
-    $importTop.prop("disabled", true).text(t("importing", "Importing…"));
+    $import
+      .prop("disabled", true)
+      .html(
+        '<span class="dashicons dashicons-download" style="margin-right: 8px; animation: ssi-spin 1s linear infinite;"></span>' +
+          t("importing", "Importing…")
+      );
+    $importTop
+      .prop("disabled", true)
+      .html(
+        '<span class="dashicons dashicons-download" style="margin-right: 8px; animation: ssi-spin 1s linear infinite;"></span>' +
+          t("importing", "Importing…")
+      );
     $fetch.prop("disabled", true);
 
     setOverlay("loading", t("importingWait", "Importing… Please wait."));
@@ -507,11 +563,22 @@ jQuery(function ($) {
       .always(function () {
         $import
           .prop("disabled", false)
-          .text(t("importSelected", "Import Selected"));
+          .html(
+            '<span class="dashicons dashicons-download" style="margin-right: 8px;"></span>' +
+              t("importSelected", "Import Selected")
+          );
         $importTop
           .prop("disabled", false)
-          .text(t("importSelected", "Import Selected"));
-        $fetch.prop("disabled", false).text(t("fetch", "Fetch Feed"));
+          .html(
+            '<span class="dashicons dashicons-download" style="margin-right: 8px;"></span>' +
+              t("importSelected", "Import Selected")
+          );
+        $fetch
+          .prop("disabled", false)
+          .html(
+            '<span class="dashicons dashicons-update" style="margin-right: 8px;"></span>' +
+              t("fetch", "Fetch Feed")
+          );
       });
   });
 
@@ -579,16 +646,22 @@ jQuery(function ($) {
 
     // Handle cron checkbox interactions
     const $cronEnabled = $('input[name="substack_importer_cron_enabled"]');
-    const $intervalField = $intervalInput.closest(".ssi-field");
+    const $intervalField = $intervalInput.closest(".ssi-form-group");
     const $importLimitField = $(
       'input[name="substack_importer_cron_import_limit"]'
-    ).closest(".ssi-field");
-    const $cronStatusField = $(".ssi-field").has("#ssi-cron-status-content");
+    ).closest(".ssi-form-group");
+    const $cronOffsetField = $(
+      'input[name="substack_importer_cron_offset"]'
+    ).closest(".ssi-form-group");
+    const $cronStatusField = $(".ssi-form-group").has(
+      "#ssi-cron-status-content"
+    );
 
     function updateCronFieldVisibility() {
       const cronEnabled = $cronEnabled.is(":checked");
       $intervalField.toggle(cronEnabled);
       $importLimitField.toggle(cronEnabled);
+      $cronOffsetField.toggle(cronEnabled);
       $cronStatusField.toggle(cronEnabled);
     }
 
@@ -754,25 +827,6 @@ jQuery(function ($) {
     $form.submit();
   });
 
-  // ===== Authentic iOS Toggle Switch =====
-  function enhanceToggleSwitches() {
-    $('.ssi-switch input[type="checkbox"]').each(function () {
-      const $toggle = $(this);
-      const $container = $toggle.closest(".ssi-switch");
-
-      // Authentic iOS toggle behavior - no bubble scaling or animation effects
-      $toggle.on("change", function () {
-        // Clean state change without additional classes or timeouts
-        // The CSS transitions handle the smooth iOS-style movement
-      });
-    });
-  }
-
-  // Initialize toggle switches when DOM is ready
-  enhanceToggleSwitches();
-
-  // Re-initialize after dynamic content loads
-  $(document).on("DOMNodeInserted", ".ssi-switch", function () {
-    enhanceToggleSwitches();
-  });
+  // ===== Standard Checkbox Handling =====
+  // Using standard checkboxes instead of custom iOS-style toggles for better compatibility
 });
