@@ -1,0 +1,24 @@
+Substack Importer Plugin - Production Build
+============================================
+
+Version: 1.9.0
+Build Date: Tue Sep  2 17:43:28 CEST 2025
+Build Type: Production
+
+Files Included:
+- Core plugin files (substack-importer.php, uninstall.php)
+- Includes directory (all class files)
+- Assets directory (CSS and JavaScript)
+- Documentation (README.md, CHANGELOG.md)
+
+Excluded Files:
+- Test files (test-*.php)
+- Development scripts
+- Build files
+
+Installation:
+1. Upload the entire folder to /wp-content/plugins/
+2. Activate through WordPress admin
+3. Configure feed URLs and settings
+
+For support and documentation, see README.md
